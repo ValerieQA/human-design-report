@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body { font-family: Arial, sans-serif; margin: 32px; color: #1f2937; }
+    h1, h2 { color: #111827; }
+    .section { margin-bottom: 24px; }
+    .meta { background: #f3f4f6; padding: 12px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Human Design Report</h1>
+  <div class="meta">
+    <p><strong>Type:</strong> {{ chart.type }}</p>
+    <p><strong>Strategy:</strong> {{ chart.strategy }}</p>
+    <p><strong>Authority:</strong> {{ chart.authority }}</p>
+    <p><strong>Profile:</strong> {{ chart.profile }}</p>
+    <p><strong>Definition:</strong> {{ chart.definition }}</p>
+  </div>
+  {% for name, block in blocks.items() %}
+  <div class="section">
+    <h2>{{ name.replace('_', ' ').title() }}</h2>
+    <p>{{ block }}</p>
+  </div>
+  {% endfor %}
+</body>
+</html>
