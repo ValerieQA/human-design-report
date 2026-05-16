@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="{{ language }}">
+<head>
+  <meta charset="utf-8" />
+  <style>
+    @page { size: A4; margin: 22mm; }
+    body { font-family: 'DejaVu Sans', Arial, sans-serif; color: #1f2937; line-height: 1.55; }
+    .title-page { page-break-after: always; display:flex; flex-direction:column; justify-content:center; min-height:90vh; }
+    .brand { color:#6d28d9; font-weight:700; font-size:22px; }
+    h1 { font-size:34px; margin:12px 0; }
+    h2 { font-size:22px; margin:18px 0 10px; color:#111827; }
+    .meta-card, .card { background:#f8fafc; border:1px solid #e5e7eb; border-radius:12px; padding:14px 16px; margin:10px 0; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .section { margin:18px 0; }
+    .major { page-break-before: always; }
+    p { margin:8px 0; }
+    ul { margin:8px 0 8px 18px; }
+  </style>
+</head>
+<body>
+  <section class="title-page">
+    <div class="brand">Human Design Clarity Lab</div>
+    <h1>Human Design Report</h1>
+    <div class="meta-card">
+      <p><strong>Client:</strong> {{ client_name }}</p>
+      <p><strong>Date Generated:</strong> {{ generated_date }}</p>
+      <p><strong>Language:</strong> {{ language }}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>🧾 Core Chart Snapshot</h2>
+    <div class="grid">
+      <div class="card"><strong>Type</strong><br>{{ chart.type or '—' }}</div>
+      <div class="card"><strong>Strategy</strong><br>{{ chart.strategy or '—' }}</div>
+      <div class="card"><strong>Authority</strong><br>{{ chart.authority or '—' }}</div>
+      <div class="card"><strong>Profile</strong><br>{{ chart.profile or '—' }}</div>
+      <div class="card"><strong>Definition</strong><br>{{ chart.definition or '—' }}</div>
+      <div class="card"><strong>Incarnation Cross / Life Theme</strong><br>{{ chart.incarnation_cross or '—' }}</div>
+    </div>
+  </section>
+
+  {% set order = [
+      ('overview','🔹 Overview'),
+      ('type_strategy_authority','⚡ Type / Strategy / Authority'),
+      ('profile','🧬 Profile'),
+      ('personality_planets','☀️ Personality Planets'),
+      ('design_planets','🌑 Design Planets'),
+      ('centers','🧠 Centers'),
+      ('channels','🔗 Channels'),
+      ('tone_of_voice','🔊 Tone of Voice'),
+      ('business','💼 Business / Social Application'),
+      ('summary','🧭 Final Summary')
+  ] %}
+
+  {% for key, title in order %}
+  <section class="section {% if loop.index in [4,8,10] %}major{% endif %}">
+    <h2>{{ title }}</h2>
+    <div class="card">{{ blocks.get(key, '') | replace('\n', '<br/>') | safe }}</div>
+  </section>
+  {% endfor %}
+</body>
+</html>
