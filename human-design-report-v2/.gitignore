@@ -7,3 +7,24 @@ __pycache__/
 input/*.pdf
 output/*
 !output/.gitkeep
+# Python
+__pycache__/
+*.pyc
+
+# Virtual env
+venv/
+.venv/
+
+# Environment
+.env
+
+# IDE
+.idea/
+.vscode/
+
+# Generated files
+output/
+input/*.pdf
+
+# macOS
+.DS_Store
