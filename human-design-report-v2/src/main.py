@@ -12,8 +12,35 @@ from normalize_chart import normalize_chart_data
 from validate_report import validate_report
 
 
+LANGUAGE_ALIASES = {
+    "en": "en",
+    "english": "en",
+    "ru": "ru",
+    "russian": "ru",
+    "русский": "ru",
+    "uk": "uk",
+    "ukr": "uk",
+    "ukrainian": "uk",
+    "українська": "uk",
+}
+
+
 def sanitize_client_name(client_name: str) -> str:
     return "_".join(client_name.strip().split())
+
+
+def normalize_language(language: str) -> str:
+    key = (language or "").strip().lower()
+    if not key:
+        key = REPORT_LANGUAGE.lower()
+    return LANGUAGE_ALIASES.get(key, key)
+
+
+def cleanup_output_dir() -> None:
+    for pattern in ("*.pdf", "*.html", "*.json", "*.txt"):
+        for file_path in OUTPUT_DIR.glob(pattern):
+            if file_path.name != ".gitkeep":
+                file_path.unlink(missing_ok=True)
 
 
 def get_inputs() -> tuple[Path, str, str]:
@@ -25,13 +52,13 @@ def get_inputs() -> tuple[Path, str, str]:
 
     client_name = args.client_name or input("Enter client name: ").strip()
     language = args.language or input("Enter report language (en/ru/uk/etc.): ").strip()
-    if not language:
-        language = REPORT_LANGUAGE
+    language = normalize_language(language)
     return Path(args.pdf_path), client_name, language
 
 
 def run_pipeline(pdf_path: Path, client_name: str, report_language: str) -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    cleanup_output_dir()
     clean_name = sanitize_client_name(client_name)
     raw_text_path = OUTPUT_DIR / "raw_text.txt"
     normalized_path = OUTPUT_DIR / "normalized_chart.json"

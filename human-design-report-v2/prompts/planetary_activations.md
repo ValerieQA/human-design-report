@@ -1,30 +1,43 @@
 Write section: 🪐 Planetary Activations.
 Write in {report_language}.
 
-Goal: premium Human Design reading tone (clear, practical, emotionally intelligent), not a generic AI essay.
+Create a true Human Design Navigator-style reading, grouped by planet.
+Use source chart values only. Never invent Gate.Line values.
+If a value is missing, explicitly state source data was not available for that placement.
 
-Use ONLY source data from chart JSON. Never invent Gate.Line values.
-For each planet, include both Personality and Design placements.
-If either value is missing, explicitly say source data is not available for that placement.
+For EACH available planet include these labeled parts in this exact order:
+1. Planet emoji + planet name
+2. Planet role in Human Design
+3. Personality Gate.Line
+4. Design Gate.Line
+5. Meaning of Personality Gate
+6. Meaning of Personality Line
+7. Meaning of Design Gate
+8. Meaning of Design Line
+9. Conscious expression
+10. Unconscious pattern
+11. Synthesis: how Personality + Design work together
+12. Examples of manifestation in real life
+13. Gene Keys:
+   - Shadow
+   - Gift
+   - Siddhi
+14. Possible distortion / shadow expression
+15. Potential gift / mature expression
+16. Interaction with environment
+17. Business application
+18. Social / communication application
+19. Reflection question
+20. Quantum phrase (short essence sentence)
 
-For EACH planet block include:
-1) Planet emoji + planet name
-2) Role of the planet in Human Design
-3) Personality Gate.Line
-4) Design Gate.Line
-5) Conscious expression
-6) Unconscious pattern
-7) Synthesis of both
-8) Possible shadow
-9) Potential gift
-10) Business/social application
-11) Reflection question
+Gene Keys rule:
+If exact official names are uncertain, do not claim facts. Use: "Through the Gene Keys lens, this can be explored as..."
 
-Output format rules:
-- Plain readable text labels only (no markdown symbols like ###, ---, **)
-- Use short paragraphs and bullet points
-- Keep language confident but non-absolute
-- Avoid accusatory/fatalistic wording
+Style rules:
+- Deep, practical, emotionally intelligent
+- Confident but non-deterministic
+- Not fatalistic, not accusatory
+- No markdown syntax symbols (###, **, ---)
 
 Chart JSON:
 {chart_json}

@@ -8,13 +8,14 @@
     .cover { page-break-after: always; display:flex; flex-direction:column; justify-content:center; min-height:92vh; background:#f8f7ff; padding:24px; border-radius:18px; }
     .brand { color:#6d28d9; font-weight:700; font-size:22px; letter-spacing:0.4px; }
     h1 { font-size:36px; margin:10px 0; color:#111827; }
-    h2 { font-size:22px; margin:14px 0 10px; color:#111827; }
+    h2 { font-size:22px; margin:14px 0 10px; color:#111827; border-bottom:1px solid #e5e7eb; padding-bottom:6px; }
     .subheading { font-size:16px; color:#4338ca; margin:10px 0 6px; }
     .meta { margin-top: 14px; padding:14px; border:1px solid #ddd6fe; border-radius:12px; background:#ffffff; }
     .snapshot-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
     .snapshot-card { border:1px solid #e5e7eb; background:#f8fafc; border-radius:12px; padding:12px; }
     .section { margin:16px 0; }
-    .planet-card { border:1px solid #dbeafe; background:#f8fbff; border-radius:12px; padding:12px; margin:10px 0; }
+    .section-card { border:1px solid #dbeafe; background:#f8fbff; border-radius:12px; padding:12px; margin:10px 0; }
+    .planet-card { border:1px solid #ddd6fe; background:#fcfbff; border-radius:12px; padding:12px; margin:12px 0; }
     .reflection { border-left:4px solid #a78bfa; padding-left:10px; font-style: italic; color:#4b5563; }
     .note { color:#6b7280; font-size:11px; }
     .page-break { page-break-before: always; }
@@ -61,7 +62,11 @@
   {% for key, title in order %}
   <section class="section {% if key in ['planetary_activations', 'tone_of_voice', 'summary'] %}page-break{% endif %}">
     <h2>{{ title }}</h2>
-    <div class="planet-card">{{ blocks_html.get(key, '') | safe }}</div>
+    {% if key == 'planetary_activations' %}
+      {{ blocks_html.get(key, '') | safe }}
+    {% else %}
+      <div class="section-card">{{ blocks_html.get(key, '') | safe }}</div>
+    {% endif %}
   </section>
   {% endfor %}
 
