@@ -3,28 +3,43 @@
 <head>
   <meta charset="utf-8" />
   <style>
-    @page { size: A4; margin: 18mm; }
-    body { font-family: 'DejaVu Sans', Arial, sans-serif; color: #1f2937; line-height: 1.6; font-size: 12px; }
-    .cover { page-break-after: always; display:flex; flex-direction:column; justify-content:center; min-height:92vh; background:#f8f7ff; padding:24px; border-radius:18px; }
+    @page { size: A4; margin: 16mm; }
+    body { font-family: 'DejaVu Sans', Arial, sans-serif; color: #1f2937; line-height: 1.55; font-size: 12px; }
+    .page { max-width: 720px; margin: 0 auto; }
+    .cover { page-break-after: always; display:flex; flex-direction:column; justify-content:center; min-height:92vh; background:linear-gradient(180deg,#f8f7ff,#ffffff); padding:30px; border-radius:20px; }
     .brand { color:#6d28d9; font-weight:700; font-size:22px; letter-spacing:0.4px; }
-    h1 { font-size:36px; margin:10px 0; color:#111827; }
-    h2 { font-size:22px; margin:14px 0 10px; color:#111827; border-bottom:1px solid #e5e7eb; padding-bottom:6px; }
-    .subheading { font-size:16px; color:#4338ca; margin:10px 0 6px; }
-    .meta { margin-top: 14px; padding:14px; border:1px solid #ddd6fe; border-radius:12px; background:#ffffff; }
-    .snapshot-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
-    .snapshot-card { border:1px solid #e5e7eb; background:#f8fafc; border-radius:12px; padding:12px; }
+    h1 { font-size:36px; margin:12px 0; color:#111827; }
+    h2 { font-size:24px; margin:20px 0 12px; color:#111827; border-bottom:1px solid #e5e7eb; padding-bottom:7px; }
+    h3 { font-size:17px; margin:10px 0 8px; color:#312e81; }
+    .meta { margin-top: 16px; padding:16px; border:1px solid #ddd6fe; border-radius:12px; background:#ffffff; }
+    .snapshot-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:12px; margin:8px 0 20px; }
+    .snapshot-card { border:1px solid #e5e7eb; box-shadow:0 2px 8px rgba(17,24,39,.05); background:#f8fafc; border-radius:12px; padding:14px; }
+    .snapshot-label { font-size:11px; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:.5px; }
+    .snapshot-value { font-size:16px; font-weight:700; color:#111827; }
     .section { margin:16px 0; }
-    .section-card { border:1px solid #dbeafe; background:#f8fbff; border-radius:12px; padding:12px; margin:10px 0; }
-    .planet-card { border:1px solid #ddd6fe; background:#fcfbff; border-radius:12px; padding:12px; margin:12px 0; }
-    .reflection { border-left:4px solid #a78bfa; padding-left:10px; font-style: italic; color:#4b5563; }
-    .note { color:#6b7280; font-size:11px; }
+    .section-card { border:1px solid #dbeafe; background:#f8fbff; border-radius:14px; padding:14px; margin:10px 0; }
+    .activation-map { border:1px solid #e9d5ff; background:#fdfbff; border-radius:14px; padding:14px; margin-top:14px; }
+    .activation-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:6px 0; }
+    .activation-chip { border:1px solid #ede9fe; border-radius:10px; padding:8px 10px; background:#fff; }
+    .planet-card { border:1px solid #ddd6fe; background:#ffffff; box-shadow:0 2px 8px rgba(30,41,59,.06); border-radius:14px; padding:14px; margin:12px 0; page-break-inside: avoid; }
+    .planet-header { font-size:18px; font-weight:700; color:#312e81; }
+    .planet-role { color:#4b5563; }
+    .subsection { margin-top:9px; }
+    .subsection-title { font-weight:700; color:#111827; margin-top:8px; }
+    .reflection-box { border-left:4px solid #a78bfa; background:#f5f3ff; padding:9px 10px; border-radius:6px; }
+    .quantum-box { border:1px dashed #c4b5fd; background:#faf5ff; padding:9px 10px; border-radius:8px; }
+    .clean-table { width:100%; border-collapse:collapse; margin:8px 0; }
+    .clean-table th,.clean-table td { border:1px solid #e5e7eb; padding:7px 8px; text-align:left; }
+    .clean-table th { background:#f3f4f6; }
     .page-break { page-break-before: always; }
     p { margin:6px 0; }
     ul { margin:6px 0 6px 18px; }
     li { margin-bottom:4px; }
+    .note { color:#6b7280; font-size:11px; margin-top:18px; }
   </style>
 </head>
 <body>
+<div class="page">
   <section class="cover">
     <div class="brand">Human Design Clarity Lab</div>
     <h1>Human Design Report</h1>
@@ -38,12 +53,29 @@
   <section class="section">
     <h2>🧾 Core Chart Snapshot</h2>
     <div class="snapshot-grid">
-      <div class="snapshot-card"><strong>Type</strong><br>{{ chart.type or '—' }}</div>
-      <div class="snapshot-card"><strong>Strategy</strong><br>{{ chart.strategy or '—' }}</div>
-      <div class="snapshot-card"><strong>Authority</strong><br>{{ chart.authority or '—' }}</div>
-      <div class="snapshot-card"><strong>Profile</strong><br>{{ chart.profile or '—' }}</div>
-      <div class="snapshot-card"><strong>Definition</strong><br>{{ chart.definition or '—' }}</div>
-      <div class="snapshot-card"><strong>Incarnation Cross / Life Theme</strong><br>{{ chart.incarnation_cross or '—' }}</div>
+      {% for label, value in [
+        ('Type', chart.type), ('Strategy', chart.strategy), ('Authority', chart.authority),
+        ('Profile', chart.profile), ('Definition', chart.definition), ('Incarnation Cross / Life Theme', chart.incarnation_cross)
+      ] %}
+      <div class="snapshot-card"><div class="snapshot-label">{{ label }}</div><div class="snapshot-value">{{ value or '—' }}</div></div>
+      {% endfor %}
+    </div>
+
+    <div class="activation-map">
+      <div class="subsection-title">Activation Map</div>
+      <div class="activation-row">
+        <div><strong>Personality Activations</strong></div>
+        <div><strong>Design Activations</strong></div>
+      </div>
+      {% for planet, pval in chart.personality.items() %}
+      {% set dval = chart.design.get(planet) %}
+      {% if pval or dval %}
+      <div class="activation-row">
+        <div class="activation-chip"><strong>{{ planet }}</strong> — {{ pval or 'N/A' }}</div>
+        <div class="activation-chip"><strong>{{ planet }}</strong> — {{ dval or 'N/A' }}</div>
+      </div>
+      {% endif %}
+      {% endfor %}
     </div>
   </section>
 
@@ -61,7 +93,7 @@
 
   {% for key, title in order %}
   <section class="section {% if key in ['planetary_activations', 'tone_of_voice', 'summary'] %}page-break{% endif %}">
-    <h2>{{ title }}</h2>
+    <h2>{{ title.replace('💼.','💼').replace('🧭.','🧭') }}</h2>
     {% if key == 'planetary_activations' %}
       {{ blocks_html.get(key, '') | safe }}
     {% else %}
@@ -71,5 +103,6 @@
   {% endfor %}
 
   <p class="note">This report is interpretive and reflective. Through the Human Design lens, it offers possibilities, not fixed certainty.</p>
+</div>
 </body>
 </html>
