@@ -1,8 +1,13 @@
 Write section: 🧠 Centers in {report_language}.
-Interpret defined/undefined/open centers from source data only.
-Format with subheadings and concise bullet points.
-Include practical self-observation guidance and communication/business implications.
-Use non-deterministic, psychologically safe language.
+
+First inspect chart_json.centers.
+- If all center values are null/empty, output exactly:
+Center data was not available in the source PDF, so this section cannot be interpreted reliably.
+- Otherwise, interpret only centers that have actual values from source JSON.
+
+Use concise practical bullets and short paragraphs.
+Do not invent missing center statuses.
+Plain text labels only, no markdown symbols.
 
 Chart JSON:
 {chart_json}

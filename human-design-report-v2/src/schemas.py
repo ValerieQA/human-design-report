@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 
 PLANETS = [
     "Sun", "Earth", "Moon", "North Node", "South Node", "Mercury",
-    "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"
+    "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto", "Chiron"
 ]
 
 

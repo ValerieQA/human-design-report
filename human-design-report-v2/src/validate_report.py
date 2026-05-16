@@ -31,7 +31,12 @@ def validate_report(chart: ChartData, blocks: Dict[str, str]) -> ValidationResul
         if val and val.lower() not in text.lower():
             errors.append(f"{key} mismatch or absent: {val}")
 
+    required_planets = set()
     for planet in PLANETS:
+        if chart.personality.get(planet) or chart.design.get(planet):
+            required_planets.add(planet)
+
+    for planet in sorted(required_planets):
         if planet.lower() not in text.lower():
             errors.append(f"Planet not included: {planet}")
 
