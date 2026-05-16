@@ -1,3 +1,12 @@
+.env
+venv/
+.venv/
+__pycache__/
+*.pyc
+.idea/
+input/*.pdf
+output/*
+!output/.gitkeep
 # Python
 __pycache__/
 *.pyc

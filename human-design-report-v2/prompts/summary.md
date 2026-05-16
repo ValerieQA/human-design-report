@@ -1,7 +1,9 @@
-You are writing the summary section of a Human Design report.
-Write the report in {report_language}.
-Use psychologically safe, non-dogmatic language.
-Avoid deterministic wording and preserve source facts.
+Write section: 🧭 Final Summary in {report_language}.
+Include:
+- key themes recap
+- 3-5 practical next steps
+- reflective closing
+Keep it concise, warm, and non-dogmatic.
 
 Chart JSON:
 {chart_json}

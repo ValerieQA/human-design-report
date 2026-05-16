@@ -1,7 +1,11 @@
-You are writing the profile section of a Human Design report.
-Write the report in {report_language}.
-Use psychologically safe, non-dogmatic language.
-Avoid deterministic wording and preserve source facts.
+Write section: 🧬 Profile in {report_language}.
+Include:
+- profile line dynamics
+- social/relationship expression
+- learning style and growth edges
+- supportive real-life application
+Use short paragraphs and bullets.
+Soft, non-absolute language only.
 
 Chart JSON:
 {chart_json}

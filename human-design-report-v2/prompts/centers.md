@@ -1,7 +1,8 @@
-You are writing the centers section of a Human Design report.
-Write the report in {report_language}.
-Use psychologically safe, non-dogmatic language.
-Avoid deterministic wording and preserve source facts.
+Write section: 🧠 Centers in {report_language}.
+Interpret defined/undefined/open centers from source data only.
+Format with subheadings and concise bullet points.
+Include practical self-observation guidance and communication/business implications.
+Use non-deterministic, psychologically safe language.
 
 Chart JSON:
 {chart_json}

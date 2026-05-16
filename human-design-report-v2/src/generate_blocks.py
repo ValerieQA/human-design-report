@@ -1,5 +1,4 @@
 import json
-from pathlib import Path
 from typing import Dict
 
 from openai_client import OpenAIClient
@@ -10,9 +9,11 @@ SECTIONS = [
     "overview",
     "type_strategy_authority",
     "profile",
-    "planets",
+    "personality_planets",
+    "design_planets",
     "centers",
     "channels",
+    "tone_of_voice",
     "business",
     "summary",
 ]
@@ -33,7 +34,4 @@ def generate_block(section: str, chart: ChartData, report_language: str) -> str:
 
 
 def generate_all_blocks(chart: ChartData, report_language: str) -> Dict[str, str]:
-    blocks = {}
-    for section in SECTIONS:
-        blocks[section] = generate_block(section, chart, report_language)
-    return blocks
+    return {section: generate_block(section, chart, report_language) for section in SECTIONS}
