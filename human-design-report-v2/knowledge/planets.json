@@ -1,0 +1,58 @@
+{
+  "Sun": {
+    "emoji": "☀️",
+    "role": "Core life force, essence, vitality, and main self-expression."
+  },
+  "Earth": {
+    "emoji": "🌍",
+    "role": "Grounding, stability, and balance; how Sun energy becomes practical."
+  },
+  "Moon": {
+    "emoji": "🌙",
+    "role": "Inner drive and emotional motivation; what pulls the person into movement."
+  },
+  "Mercury": {
+    "emoji": "🗣️",
+    "role": "Thinking, speech, and communication; how ideas are shared."
+  },
+  "Venus": {
+    "emoji": "💚",
+    "role": "Values, relationships, money patterns, and what matters most."
+  },
+  "Mars": {
+    "emoji": "🔥",
+    "role": "Raw energy, impulses, mistakes, and growth through experience."
+  },
+  "Jupiter": {
+    "emoji": "📈",
+    "role": "Expansion, prosperity, opportunity, and guiding principles."
+  },
+  "Saturn": {
+    "emoji": "🪨",
+    "role": "Lessons, discipline, limits, maturity, and responsibility."
+  },
+  "Uranus": {
+    "emoji": "⚡",
+    "role": "Originality, disruption, uniqueness, and unconventional expression."
+  },
+  "Neptune": {
+    "emoji": "🌫️",
+    "role": "Mystery, dreams, spiritual sensitivity, and subtle perception."
+  },
+  "Pluto": {
+    "emoji": "🦂",
+    "role": "Transformation, power, depth, and unconscious evolution."
+  },
+  "North Node": {
+    "emoji": "🧭",
+    "role": "Future direction, growth path, and environment that pulls forward."
+  },
+  "South Node": {
+    "emoji": "🪞",
+    "role": "Past patterns, familiar comfort zone, and previous orientation."
+  },
+  "Chiron": {
+    "emoji": "🩹",
+    "role": "Healing theme and wound-to-wisdom path."
+  }
+}
