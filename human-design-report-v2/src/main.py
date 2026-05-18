@@ -7,7 +7,7 @@ from build_pdf import export_pdf, render_html
 from config import OUTPUT_DIR, REPORT_LANGUAGE
 from extract_pdf import extract_text_from_pdf
 from fix_blocks import fix_problematic_blocks
-from generate_blocks import generate_all_blocks
+from generate_blocks import generate_all_blocks, generate_planet_cards
 from normalize_chart import normalize_chart_data
 from validate_report import validate_report
 
@@ -94,6 +94,7 @@ def run_pipeline(pdf_path: Path, client_name: str, report_language: str) -> None
     normalized_path.write_text(json.dumps(chart.model_dump(), indent=2, ensure_ascii=False), encoding="utf-8")
 
     blocks = generate_all_blocks(chart, report_language)
+    planet_cards = generate_planet_cards(chart, report_language)
     validation = validate_report(chart, blocks)
     if not validation.valid:
         blocks = fix_problematic_blocks(chart, blocks, validation.errors, report_language)
@@ -104,6 +105,7 @@ def run_pipeline(pdf_path: Path, client_name: str, report_language: str) -> None
         "language": report_language,
         "client_name": client_name,
         "generated_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "planet_cards": planet_cards,
     }
     html = render_html(context, html_path)
     export_pdf(html, pdf_out)
