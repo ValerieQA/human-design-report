@@ -50,26 +50,39 @@ def _clean_line(line: str) -> str:
 def _block_to_html(text: str) -> str:
     value = _normalize_terms(re.sub(r"^\s*---+\s*$", "", text or "", flags=re.MULTILINE))
     lines = [_clean_line(line) for line in value.splitlines()]
-    lines = [line for line in lines if line and line not in {"•", "-", "*"}]
-    html_parts, in_list = [], False
+    # Remove standalone/orphan bullets and empty markers
+    lines = [line for line in lines if line and not re.fullmatch(r"[•\-*\u2022\u25CF\u25E6\u2043]+", line)]
+
+    html_parts = []
+    list_items = []
+
+    def flush_list() -> None:
+        nonlocal list_items
+        if list_items:
+            html_parts.append("<ul>" + "".join(f"<li>{item}</li>" for item in list_items if item.strip()) + "</ul>")
+            list_items = []
+
     for line in lines:
-        if re.match(r"^[-•*]\s+", line):
-            item = re.sub(r"^[-•*]\s+", "", line).strip()
-            if item:
-                if not in_list:
-                    html_parts.append("<ul>"); in_list = True
-                html_parts.append(f"<li>{item}</li>")
+        m = re.match(r"^[-•*]\s+(.*)$", line)
+        if m:
+            item = m.group(1).strip()
+            if item and not re.fullmatch(r"[•\-*\u2022\u25CF\u25E6\u2043]+", item):
+                list_items.append(item)
             continue
-        if in_list:
-            html_parts.append("</ul>"); in_list = False
+
+        flush_list()
         html_parts.append(f"<p>{line}</p>")
-    if in_list:
-        html_parts.append("</ul>")
+
+    flush_list()
+
     html = "\n".join(html_parts)
     html = re.sub(r"<p>(🧭|🧠|🌑|⚠️|✨|🧬|💼|🤝)\s*([^<]+)</p>", r"<div class='subsection'><div class='subsection-title'>\1 \2</div></div>", html)
     html = re.sub(r"<p>(🪞\s*Reflection:?[^<]*)</p>", r"<div class='reflection-box'>\1</div>", html)
     html = re.sub(r"<p>(🔑\s*Quantum Phrase:?[^<]*)</p>", r"<div class='quantum-box'>\1</div>", html)
     html = re.sub(r"(<div class='subsection'><div class='subsection-title'>🧬[^<]*</div></div>)", r"<div class='gene-keys-box'>\1", html)
+    # Final cleanup of accidental empty list tags/items
+    html = html.replace("<ul></ul>", "")
+    html = html.replace("<li></li>", "")
     return html
 
 

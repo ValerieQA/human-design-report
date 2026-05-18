@@ -125,3 +125,14 @@ def test_localized_labels_render():
         ua_html = render_html(_context(_chart(False), "ua"), Path(td) / "ua.html")
     assert LABELS["ru"]["core"] in ru_html and LABELS["ru"]["summary"] in ru_html
     assert LABELS["ua"]["core"] in ua_html and LABELS["ua"]["summary"] in ua_html
+
+
+def test_no_orphan_bullets_and_no_aggressive_planet_pagebreak_rules():
+    with TemporaryDirectory() as td:
+        html = render_html(_context(_chart(False), "en"), Path(td) / "r.html")
+    assert "<li></li>" not in html
+    assert ">•<" not in html and ">-<" not in html
+
+    template = Path("templates/report.html").read_text(encoding="utf-8")
+    assert "page-break-inside:avoid" not in template
+    assert "break-inside:auto" in template
