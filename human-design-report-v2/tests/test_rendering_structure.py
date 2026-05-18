@@ -1,7 +1,7 @@
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from build_pdf import render_html, validate_report_structure
+from build_pdf import LABELS, render_html, validate_report_structure
 from schemas import PLANETS
 
 
@@ -23,7 +23,7 @@ def _cards(chart):
     return cards
 
 
-def _context(chart):
+def _context(chart, language="en"):
     return {
         "chart": chart,
         "planet_cards": _cards(chart),
@@ -33,11 +33,11 @@ def _context(chart):
             "profile": "Line 5 meaning\nLine 1 meaning\nStrengths\nChallenges\nPractical guidance",
             "centers": "Center data was not available in the source PDF, so this section cannot be interpreted reliably from the current file.",
             "channels": "Channel data was not available or was not extracted from the source PDF, so this section should be treated as unavailable.",
-            "tone_of_voice": "Tone guidance",
+            "tone_of_voice": "Ген Кі\nОсобистісний Вхід 46.5\nТінь: приклад\nДар: приклад\nСіддхі: приклад",
             "business": "Business guidance without center assumptions",
             "summary": "Type, Strategy, Authority, Profile, Incarnation Cross, and practical next steps",
         },
-        "language": "en",
+        "language": language,
         "client_name": "A",
         "generated_date": "2026-05-18",
     }
@@ -45,12 +45,17 @@ def _context(chart):
 
 def test_section_order_and_uniqueness():
     with TemporaryDirectory() as td:
-        html = render_html(_context(_chart(False)), Path(td) / "r.html")
-    order = ["<h2>Core Chart Snapshot</h2>", "<h2>Activation Map</h2>", "<h2>Overview / General Summary</h2>", "<h2>Type / Strategy / Authority</h2>", "<h2>Profile</h2>", "<h2>Planetary Activations</h2>", "<h2>Centers</h2>", "<h2>Channels</h2>", "<h2>Tone of Voice</h2>", "<h2>Business / Social Application</h2>", "<h2>Final Summary</h2>"]
+        html = render_html(_context(_chart(False), "en"), Path(td) / "r.html")
+    order = [
+        f"<h2>{LABELS['en']['core']}</h2>", f"<h2>{LABELS['en']['activation_map']}</h2>", f"<h2>{LABELS['en']['overview']}</h2>",
+        f"<h2>{LABELS['en']['tsa']}</h2>", f"<h2>{LABELS['en']['profile']}</h2>", f"<h2>{LABELS['en']['planets']}</h2>",
+        f"<h2>{LABELS['en']['centers']}</h2>", f"<h2>{LABELS['en']['channels']}</h2>", f"<h2>{LABELS['en']['tone']}</h2>",
+        f"<h2>{LABELS['en']['business']}</h2>", f"<h2>{LABELS['en']['summary']}</h2>",
+    ]
     positions = [html.find(x) for x in order]
     assert all(p != -1 for p in positions)
     assert positions == sorted(positions)
-    assert html.count("Planetary Activations") == 1
+    assert html.count(LABELS['en']['planets']) == 1
 
 
 def test_planet_cards_count_and_values():
@@ -90,9 +95,18 @@ def test_no_duplicate_planet_lists_and_no_unsafe_claims():
     chart = _chart(False)
     with TemporaryDirectory() as td:
         html = render_html(_context(chart), Path(td) / "r.html")
-    banned = ["Планеты личности", "Планеты дизайна", "Personality Activations", "Design Activations", "centers are absent", "there are no defined channels"]
-    for b in banned:
+    overview_chunk = html.split('id="overview"',1)[1].split('id="type-strategy-authority"',1)[0]
+    profile_chunk = html.split('id="profile"',1)[1].split('id="planetary-activations"',1)[0]
+    banned_dup = ["Планеты личности", "Планеты дизайна", "Personality Activations", "Design Activations"]
+    for b in banned_dup:
+        assert b not in overview_chunk
+        assert b not in profile_chunk
+    for b in ["centers are absent", "there are no defined channels"]:
         assert b.lower() not in html.lower()
+    assert "snapshot-card" in html
+    assert "activation-card" in html
+    assert "Ген Кі" not in html and "Вхід" not in html and "Воротар" not in html
+    assert "Gene Keys" in html and "Shadow —" in html and "Gift —" in html and "Siddhi —" in html
 
 
 def test_validation_function_direct_failure():
@@ -103,3 +117,11 @@ def test_validation_function_direct_failure():
         assert False
     except ValueError:
         assert True
+
+
+def test_localized_labels_render():
+    with TemporaryDirectory() as td:
+        ru_html = render_html(_context(_chart(False), "ru"), Path(td) / "ru.html")
+        ua_html = render_html(_context(_chart(False), "ua"), Path(td) / "ua.html")
+    assert LABELS["ru"]["core"] in ru_html and LABELS["ru"]["summary"] in ru_html
+    assert LABELS["ua"]["core"] in ua_html and LABELS["ua"]["summary"] in ua_html
