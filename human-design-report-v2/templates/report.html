@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="{{ language }}">
+<head>
+<meta charset="utf-8" />
+<style>
+@page{size:A4;margin:16mm}body{font-family:DejaVu Sans,Arial,sans-serif;color:#1f2937;line-height:1.6;font-size:12px} .page{max-width:760px;margin:0 auto}
+.cover{page-break-after:always;min-height:85vh;display:flex;flex-direction:column;justify-content:center;padding:28px;border-radius:18px;background:linear-gradient(180deg,#f8f7ff,#fff)}
+h1{font-size:34px;margin:6px 0 18px}h2{font-size:22px;margin:22px 0 12px;padding-bottom:6px;border-bottom:1px solid #e5e7eb}p{margin:7px 0}
+.snapshot-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.snapshot-card{background:#f8fafc;border:1px solid #e5e7eb;border-radius:12px;padding:12px;box-shadow:0 2px 8px rgba(17,24,39,.05)}
+.snapshot-label{font-size:11px;color:#6b7280}.snapshot-value{font-size:16px;font-weight:700;margin-top:4px}
+.activation-map{background:#fdfbff;border:1px solid #e9d5ff;border-radius:14px;padding:14px}.activation-columns{display:grid;grid-template-columns:1fr 1fr;gap:12px}.activation-column{border:1px solid #ede9fe;background:#fff;border-radius:12px;padding:10px}
+.activation-card{background:#faf5ff;border:1px solid #e9d5ff;border-radius:10px;padding:8px 10px;margin:7px 0}.activation-planet{font-weight:700}.activation-gate{font-size:15px;font-weight:700}.activation-theme{font-size:11px;color:#6b7280}
+.section{margin:18px 0}.section-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:14px}.muted-card{background:#f9fafb;border:1px dashed #d1d5db;color:#6b7280}
+.planet-card{background:#fff;border:1px solid #ddd6fe;border-radius:14px;padding:14px;margin:14px 0;box-shadow:0 2px 8px rgba(30,41,59,.06);page-break-inside:avoid}.planet-header{font-size:18px;font-weight:700;color:#312e81;margin-bottom:6px}
+.activation-pair{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.activation-chip{border:1px solid #ddd6fe;border-radius:999px;background:#f5f3ff;padding:4px 10px}.subsection{margin:8px 0}.subsection-title{font-weight:700}
+.gene-keys-box{border:1px solid #e5e7eb;background:#f8fafc;border-radius:10px;padding:10px;margin-top:8px}.reflection-box{border-left:4px solid #a78bfa;background:#f5f3ff;padding:10px;border-radius:6px}.quantum-box{border:1px dashed #c4b5fd;background:#faf5ff;padding:10px;border-radius:8px}
+ul{margin:7px 0 7px 18px}li{margin-bottom:4px}
+</style>
+</head>
+<body><div class="page">
+<section class="cover"><h1>{{ ui.title }}</h1><p><strong>{{ client_name }}</strong></p><p>{{ generated_date }}</p></section>
+
+<section class="section" id="core-snapshot"><h2>{{ ui.core }}</h2>
+<div class="snapshot-grid">{% for label, value in [('Type', chart.type), ('Strategy', chart.strategy), ('Authority', chart.authority), ('Profile', chart.profile), ('Definition', chart.definition), ('Incarnation Cross', chart.incarnation_cross)] %}
+<div class="snapshot-card"><div class="snapshot-label">{{ label }}</div><div class="snapshot-value">{{ value or '—' }}</div></div>{% endfor %}</div></section>
+
+<section class="section" id="activation-map"><h2>{{ ui.activation_map }}</h2>
+<div class="activation-map"><div class="activation-columns">
+<div class="activation-column"><div class="subsection-title">{{ ui.personality_acts }}</div>{% for row in activation_map_rows %}<div class="activation-card"><div class="activation-planet">{{ row.emoji }} {{ row.planet }}</div><div class="activation-gate">{{ row.personality.gate_line }}</div><div class="activation-theme">{{ row.personality.theme }}</div></div>{% endfor %}</div>
+<div class="activation-column"><div class="subsection-title">{{ ui.design_acts }}</div>{% for row in activation_map_rows %}<div class="activation-card"><div class="activation-planet">{{ row.emoji }} {{ row.planet }}</div><div class="activation-gate">{{ row.design.gate_line }}</div><div class="activation-theme">{{ row.design.theme }}</div></div>{% endfor %}</div>
+</div></div></section>
+
+<section class="section" id="overview"><h2>{{ ui.overview }}</h2><div class="section-card">{{ blocks_html.get('overview', '') | safe }}</div></section>
+<section class="section" id="type-strategy-authority"><h2>{{ ui.tsa }}</h2><div class="section-card">{{ blocks_html.get('type_strategy_authority', '') | safe }}</div></section>
+<section class="section" id="profile"><h2>{{ ui.profile }}</h2><div class="section-card">{{ blocks_html.get('profile', '') | safe }}</div></section>
+
+<section class="section" id="planetary-activations"><h2>{{ ui.planets }}</h2>{% for card in planet_cards %}
+<div class="planet-card"><div class="planet-header">{{ card.emoji }} {{ card.planet }} — {{ card.role }}</div><div class="activation-pair"><span class="activation-chip">Personality: {{ card.personality_gate or 'N/A' }}</span><span class="activation-chip">Design: {{ card.design_gate or 'N/A' }}</span></div><div class="subsection">{{ card.content | replace('\n','<br/>') | safe }}</div></div>
+{% endfor %}</section>
+
+<section class="section" id="centers"><h2>{{ ui.centers }}</h2><div class="section-card muted-card">{{ blocks_html.get('centers', '') | safe }}</div></section>
+<section class="section" id="channels"><h2>{{ ui.channels }}</h2><div class="section-card muted-card">{{ blocks_html.get('channels', '') | safe }}</div></section>
+<section class="section" id="tone-of-voice"><h2>{{ ui.tone }}</h2><div class="section-card">{{ blocks_html.get('tone_of_voice', '') | safe }}</div></section>
+<section class="section" id="business"><h2>{{ ui.business }}</h2><div class="section-card">{{ blocks_html.get('business', '') | safe }}</div></section>
+<section class="section" id="final-summary"><h2>{{ ui.summary }}</h2><div class="section-card">{{ blocks_html.get('summary', '') | safe }}</div></section>
+</div></body></html>
