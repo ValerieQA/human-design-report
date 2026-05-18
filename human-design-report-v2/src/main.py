@@ -37,7 +37,7 @@ def normalize_language(language: str) -> str:
 
 
 def cleanup_output_dir() -> None:
-    for pattern in ("*.pdf", "*.html", "*.json", "*.txt"):
+    for pattern in ("*.pdf", "*.html", "*.json", "*.txt", "*.textClipping"):
         for file_path in OUTPUT_DIR.glob(pattern):
             if file_path.name != ".gitkeep":
                 file_path.unlink(missing_ok=True)
