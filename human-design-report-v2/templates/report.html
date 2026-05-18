@@ -2,25 +2,39 @@
 <html lang="{{ language }}">
 <head><meta charset="utf-8" />
 <style>
-.planet-card{border:1px solid #ddd;padding:12px;margin:12px 0}.planet-header{font-weight:700}.activation-chip{display:inline-block;border:1px solid #ccc;border-radius:999px;padding:2px 8px;margin-right:6px}
+.section{margin:12px 0}.planet-card{border:1px solid #ddd;padding:12px;margin:12px 0}.planet-header{font-weight:700}.activation-chip{display:inline-block;border:1px solid #ccc;border-radius:999px;padding:2px 8px;margin-right:6px}
 </style></head>
 <body>
 <section class="cover"><h1>Human Design Report</h1></section>
-<section>
+
+<section class="section" id="core-snapshot">
+  <h2>Core Chart Snapshot</h2>
+  <p>Type: {{ chart.type or 'N/A' }}</p>
+  <p>Strategy: {{ chart.strategy or 'N/A' }}</p>
+  <p>Authority: {{ chart.authority or 'N/A' }}</p>
+  <p>Profile: {{ chart.profile or 'N/A' }}</p>
+  <p>Definition: {{ chart.definition or 'N/A' }}</p>
+  <p>Incarnation Cross: {{ chart.incarnation_cross or 'N/A' }}</p>
+</section>
+
+<section class="section" id="activation-map">
+  <h2>Activation Map</h2>
   <div class="activation-map">
     {% for row in activation_map_rows %}
     <div>{{ row.planet }} {{ row.personality.gate_line }} {{ row.personality.theme }} | {{ row.design.gate_line }} {{ row.design.theme }}</div>
     {% endfor %}
   </div>
 </section>
-{% for key, title in [('overview','Overview'),('type_strategy_authority','Type / Strategy / Authority'),('profile','Profile'),('centers','Centers'),('channels','Channels'),('tone_of_voice','Tone of Voice'),('business','Business'),('summary','Summary')] %}
-<section><h2>{{ title }}</h2><div>{{ blocks_html.get(key, '') | safe }}</div></section>
-{% endfor %}
-<section>
+
+<section class="section" id="overview"><h2>Overview / General Summary</h2><div>{{ blocks_html.get('overview', '') | safe }}</div></section>
+<section class="section" id="type-strategy-authority"><h2>Type / Strategy / Authority</h2><div>{{ blocks_html.get('type_strategy_authority', '') | safe }}</div></section>
+<section class="section" id="profile"><h2>Profile</h2><div>{{ blocks_html.get('profile', '') | safe }}</div></section>
+
+<section class="section" id="planetary-activations">
 <h2>Planetary Activations</h2>
 {% for card in planet_cards %}
   <div class="planet-card">
-    <div class="planet-header">{{ card.emoji }} {{ card.planet }}</div>
+    <div class="planet-header">{{ card.emoji }} {{ card.planet }} — {{ card.role }}</div>
     <div class="activation-pair">
       <span class="activation-chip">Personality: Gate {{ card.personality_gate or 'N/A' }}</span>
       <span class="activation-chip">Design: Gate {{ card.design_gate or 'N/A' }}</span>
@@ -29,4 +43,10 @@
   </div>
 {% endfor %}
 </section>
+
+<section class="section" id="centers"><h2>Centers</h2><div>{{ blocks_html.get('centers', '') | safe }}</div></section>
+<section class="section" id="channels"><h2>Channels</h2><div>{{ blocks_html.get('channels', '') | safe }}</div></section>
+<section class="section" id="tone-of-voice"><h2>Tone of Voice</h2><div>{{ blocks_html.get('tone_of_voice', '') | safe }}</div></section>
+<section class="section" id="business"><h2>Business / Social Application</h2><div>{{ blocks_html.get('business', '') | safe }}</div></section>
+<section class="section" id="final-summary"><h2>Final Summary</h2><div>{{ blocks_html.get('summary', '') | safe }}</div></section>
 </body></html>
