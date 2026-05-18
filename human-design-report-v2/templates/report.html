@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="{{ language }}">
+<head>
+  <meta charset="utf-8" />
+  <style>
+    @page { size: A4; margin: 16mm; }
+    body { font-family: 'DejaVu Sans', Arial, sans-serif; color: #1f2937; line-height: 1.55; font-size: 12px; }
+    .page { max-width: 720px; margin: 0 auto; }
+    .cover { page-break-after: always; display:flex; flex-direction:column; justify-content:center; min-height:92vh; background:linear-gradient(180deg,#f8f7ff,#ffffff); padding:30px; border-radius:20px; }
+    .brand { color:#6d28d9; font-weight:700; font-size:22px; }
+    h1 { font-size:36px; margin:12px 0; }
+    h2 { font-size:24px; margin:20px 0 12px; border-bottom:1px solid #e5e7eb; padding-bottom:7px; }
+    .meta { margin-top: 16px; padding:16px; border:1px solid #ddd6fe; border-radius:12px; background:#ffffff; }
+    .snapshot-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:12px; margin:8px 0 20px; }
+    .snapshot-card { border:1px solid #e5e7eb; box-shadow:0 2px 8px rgba(17,24,39,.05); background:#f8fafc; border-radius:12px; padding:14px; }
+    .snapshot-label { font-size:11px; color:#6b7280; margin-bottom:5px; text-transform:uppercase; }
+    .snapshot-value { font-size:16px; font-weight:700; }
+    .activation-map { border:1px solid #e9d5ff; background:#fdfbff; border-radius:14px; padding:14px; margin-top:14px; }
+    .activation-columns { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .activation-column { border:1px solid #ede9fe; border-radius:12px; background:#fff; padding:10px; }
+    .activation-item { border-bottom:1px dashed #e5e7eb; padding:8px 0; }
+    .activation-item:last-child { border-bottom:none; }
+    .activation-planet { font-weight:700; }
+    .activation-gate { font-weight:600; }
+    .activation-theme { font-size:11px; color:#6b7280; }
+    .section { margin:16px 0; }
+    .section-card { border:1px solid #dbeafe; background:#f8fbff; border-radius:14px; padding:14px; }
+    .planet-card { border:1px solid #ddd6fe; background:#ffffff; box-shadow:0 2px 8px rgba(30,41,59,.06); border-radius:14px; padding:14px; margin:12px 0; page-break-inside: avoid; }
+    .planet-header { font-size:18px; font-weight:700; color:#312e81; }
+    .planet-title { letter-spacing:.2px; }
+    .planet-role { color:#4b5563; }
+    .activation-pair { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0; }
+    .activation-chip { border:1px solid #ddd6fe; border-radius:999px; padding:4px 10px; background:#f5f3ff; }
+    .subsection { margin-top:9px; }
+    .subsection-title { font-weight:700; margin-top:8px; }
+    .reflection-box { border-left:4px solid #a78bfa; background:#f5f3ff; padding:9px 10px; border-radius:6px; margin-top:8px; }
+    .quantum-box { border:1px dashed #c4b5fd; background:#faf5ff; padding:9px 10px; border-radius:8px; margin-top:8px; }
+    .clean-table { width:100%; border-collapse:collapse; margin:8px 0; }
+    .clean-table th,.clean-table td { border:1px solid #e5e7eb; padding:7px 8px; text-align:left; }
+    .clean-table th { background:#f3f4f6; }
+    .page-break { page-break-before: always; }
+    p { margin:6px 0; }
+    ul { margin:6px 0 6px 18px; }
+    li { margin-bottom:4px; }
+    .note { color:#6b7280; font-size:11px; margin-top:18px; }
+  </style>
+</head>
+<body><div class="page">
+  <section class="cover">
+    <div class="brand">Human Design Clarity Lab</div>
+    <h1>Human Design Report</h1>
+    <div class="meta">
+      <p><strong>Client:</strong> {{ client_name }}</p>
+      <p><strong>Date Generated:</strong> {{ generated_date }}</p>
+      <p><strong>Language:</strong> {{ language }}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>🧾 Core Chart Snapshot</h2>
+    <div class="snapshot-grid">
+      {% for label, value in [('Type', chart.type), ('Strategy', chart.strategy), ('Authority', chart.authority),('Profile', chart.profile), ('Definition', chart.definition), ('Incarnation Cross / Life Theme', chart.incarnation_cross)] %}
+      <div class="snapshot-card"><div class="snapshot-label">{{ label }}</div><div class="snapshot-value">{{ value or '—' }}</div></div>
+      {% endfor %}
+    </div>
+
+    <div class="activation-map">
+      <div class="subsection-title">Activation Map</div>
+      <div class="activation-columns">
+        <div class="activation-column">
+          <div class="subsection-title">Personality Activations</div>
+          {% for row in activation_map_rows %}
+          <div class="activation-item"><div class="activation-planet">{{ row.emoji }} <strong>{{ row.planet }}</strong></div><div class="activation-gate">{{ row.personality.gate_line }}</div><div class="activation-theme">{{ row.personality.theme }}</div></div>
+          {% endfor %}
+        </div>
+        <div class="activation-column">
+          <div class="subsection-title">Design Activations</div>
+          {% for row in activation_map_rows %}
+          <div class="activation-item"><div class="activation-planet">{{ row.emoji }} <strong>{{ row.planet }}</strong></div><div class="activation-gate">{{ row.design.gate_line }}</div><div class="activation-theme">{{ row.design.theme }}</div></div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% set order = [('overview','🔹 Overview'),('type_strategy_authority','⚡ Type / Strategy / Authority'),('profile','🧬 Profile'),('planetary_activations','🪐 Planetary Activations'),('centers','🧠 Centers'),('channels','🔗 Channels'),('tone_of_voice','🔊 Tone of Voice'),('business','💼 Business / Social Application'),('summary','🧭 Final Summary')] %}
+  {% for key, title in order %}
+  <section class="section {% if key in ['planetary_activations', 'tone_of_voice', 'summary'] %}page-break{% endif %}">
+    <h2>{{ title.replace('💼.','💼').replace('🧭.','🧭') }}</h2>
+    {% if key == 'planetary_activations' %}{{ blocks_html.get(key, '') | safe }}{% else %}<div class="section-card">{{ blocks_html.get(key, '') | safe }}</div>{% endif %}
+  </section>
+  {% endfor %}
+
+  <p class="note">This report is interpretive and reflective. Through the Human Design lens, it offers possibilities, not fixed certainty.</p>
+</div></body></html>
