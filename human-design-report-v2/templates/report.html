@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="{{ language }}">
+<head><meta charset="utf-8" />
+<style>
+.planet-card{border:1px solid #ddd;padding:12px;margin:12px 0}.planet-header{font-weight:700}.activation-chip{display:inline-block;border:1px solid #ccc;border-radius:999px;padding:2px 8px;margin-right:6px}
+</style></head>
+<body>
+<section class="cover"><h1>Human Design Report</h1></section>
+<section>
+  <div class="activation-map">
+    {% for row in activation_map_rows %}
+    <div>{{ row.planet }} {{ row.personality.gate_line }} {{ row.personality.theme }} | {{ row.design.gate_line }} {{ row.design.theme }}</div>
+    {% endfor %}
+  </div>
+</section>
+{% for key, title in [('overview','Overview'),('type_strategy_authority','Type / Strategy / Authority'),('profile','Profile'),('centers','Centers'),('channels','Channels'),('tone_of_voice','Tone of Voice'),('business','Business'),('summary','Summary')] %}
+<section><h2>{{ title }}</h2><div>{{ blocks_html.get(key, '') | safe }}</div></section>
+{% endfor %}
+<section>
+<h2>Planetary Activations</h2>
+{% for card in planet_cards %}
+  <div class="planet-card">
+    <div class="planet-header">{{ card.emoji }} {{ card.planet }}</div>
+    <div class="activation-pair">
+      <span class="activation-chip">Personality: Gate {{ card.personality_gate or 'N/A' }}</span>
+      <span class="activation-chip">Design: Gate {{ card.design_gate or 'N/A' }}</span>
+    </div>
+    <div class="subsection">{{ card.content | replace('\n','<br/>') | safe }}</div>
+  </div>
+{% endfor %}
+</section>
+</body></html>
