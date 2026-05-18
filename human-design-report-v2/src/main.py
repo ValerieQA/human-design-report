@@ -14,14 +14,18 @@ from validate_report import validate_report
 
 LANGUAGE_ALIASES = {
     "en": "en",
+    "eng": "en",
     "english": "en",
     "ru": "ru",
+    "rus": "ru",
     "russian": "ru",
     "русский": "ru",
-    "uk": "uk",
-    "ukr": "uk",
-    "ukrainian": "uk",
-    "українська": "uk",
+    "ua": "ua",
+    "ukr": "ua",
+    "ukrainian": "ua",
+    "українська": "ua",
+    "украинский": "ua",
+    "ukrainian language": "ua",
 }
 
 
@@ -29,11 +33,25 @@ def sanitize_client_name(client_name: str) -> str:
     return "_".join(client_name.strip().split())
 
 
+def _normalize_default_language() -> str:
+    base = (REPORT_LANGUAGE or "en").strip().lower()
+    return LANGUAGE_ALIASES.get(base, "en")
+
+
 def normalize_language(language: str) -> str:
     key = (language or "").strip().lower()
     if not key:
-        key = REPORT_LANGUAGE.lower()
+        return _normalize_default_language()
+    if key == "uk":
+        raise ValueError("ambiguous_uk")
     return LANGUAGE_ALIASES.get(key, key)
+
+
+def _resolve_ambiguous_uk() -> str:
+    followup = input(
+        "Did you mean Ukrainian language or United Kingdom context? Please enter: ua for Ukrainian or en for English. "
+    ).strip().lower()
+    return "ua" if followup == "ua" else "en"
 
 
 def cleanup_output_dir() -> None:
@@ -47,12 +65,18 @@ def get_inputs() -> tuple[Path, str, str]:
     parser = argparse.ArgumentParser(description="Human Design report generator")
     parser.add_argument("pdf_path", help="Path to source bodygraph PDF")
     parser.add_argument("--client-name", dest="client_name", help="Client name")
-    parser.add_argument("--language", dest="language", help="Report language code, e.g. en/ru/uk")
+    parser.add_argument("--language", dest="language", help="Report language code, e.g. en/ru/ua")
     args = parser.parse_args()
 
     client_name = args.client_name or input("Enter client name: ").strip()
-    language = args.language or input("Enter report language (en/ru/uk/etc.): ").strip()
-    language = normalize_language(language)
+    language_input = args.language or input("Enter report language (en/ru/ua/etc.): ").strip()
+    try:
+        language = normalize_language(language_input)
+    except ValueError as exc:
+        if str(exc) == "ambiguous_uk":
+            language = _resolve_ambiguous_uk()
+        else:
+            raise
     return Path(args.pdf_path), client_name, language
 
 

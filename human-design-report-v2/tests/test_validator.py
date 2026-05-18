@@ -14,4 +14,4 @@ def test_validator_passes_minimal_case():
     )
     blocks = {"overview": "Generator To Respond Sacral 4/6 Single Sun 44.5 7.1"}
     result = validate_report(chart, blocks)
-    assert result.valid is False
+    assert result.valid is True
