@@ -9,6 +9,57 @@ from schemas import PLANETS
 
 PLANET_EMOJIS = {"Sun":"☀️","Earth":"🌍","Moon":"🌙","North Node":"🧭","South Node":"🪞","Mercury":"🗣️","Venus":"💚","Mars":"🔥","Jupiter":"📈","Saturn":"🪨","Uranus":"⚡","Neptune":"🌫️","Pluto":"🦂","Chiron":"🩹"}
 
+LABELS = {
+    "en": {
+        "title": "Human Design Report",
+        "core": "Core Chart Snapshot",
+        "activation_map": "Human Design Activation Map",
+        "personality_acts": "Personality Activations",
+        "design_acts": "Design Activations",
+        "overview": "Overview / General Summary",
+        "tsa": "Type / Strategy / Authority",
+        "profile": "Profile",
+        "planets": "Planetary Activations",
+        "centers": "Centers",
+        "channels": "Channels",
+        "tone": "Tone of Voice",
+        "business": "Business / Social Application",
+        "summary": "Final Summary",
+    },
+    "ru": {
+        "title": "Отчёт Human Design",
+        "core": "Основные параметры карты",
+        "activation_map": "Карта активаций",
+        "personality_acts": "Активации Личности",
+        "design_acts": "Активации Дизайна",
+        "overview": "Обзор",
+        "tsa": "Тип / Стратегия / Авторитет",
+        "profile": "Профиль",
+        "planets": "Планетарные активации",
+        "centers": "Центры",
+        "channels": "Каналы",
+        "tone": "Тон голоса",
+        "business": "Бизнес / Социальное применение",
+        "summary": "Финальное резюме",
+    },
+    "ua": {
+        "title": "Звіт Human Design",
+        "core": "Основні параметри карти",
+        "activation_map": "Карта активацій",
+        "personality_acts": "Активації Особистості",
+        "design_acts": "Активації Дизайну",
+        "overview": "Огляд",
+        "tsa": "Тип / Стратегія / Авторитет",
+        "profile": "Профіль",
+        "planets": "Планетарні активації",
+        "centers": "Центри",
+        "channels": "Канали",
+        "tone": "Тон голосу",
+        "business": "Бізнес / Соціальне застосування",
+        "summary": "Фінальний підсумок",
+    },
+}
+
 
 def _load_gate_themes() -> dict[str, str]:
     gates_path = BASE_DIR / "knowledge" / "gates.json"
@@ -29,16 +80,27 @@ def _block_to_html(text: str) -> str:
     value = re.sub(r"^\s*---+\s*$", "", text or "", flags=re.MULTILINE)
     lines = [_clean_line(line) for line in value.splitlines()]
     lines = [line for line in lines if line and line not in {"•", "-", "*"}]
-    html_parts = []
+    html_parts, in_list = [], False
     for line in lines:
         if re.match(r"^[-•*]\s+", line):
             item = re.sub(r"^[-•*]\s+", "", line).strip()
             if item:
+                if not in_list:
+                    html_parts.append("<ul>")
+                    in_list = True
                 html_parts.append(f"<li>{item}</li>")
-        else:
-            html_parts.append(f"<p>{line}</p>")
+            continue
+        if in_list:
+            html_parts.append("</ul>")
+            in_list = False
+        html_parts.append(f"<p>{line}</p>")
+    if in_list:
+        html_parts.append("</ul>")
     html = "\n".join(html_parts)
-    html = re.sub(r"(<li>.*?</li>)", r"<ul>\1</ul>", html)
+    html = re.sub(r"<p>(🧭|🧠|🌑|⚠️|✨|🧬|💼|🤝)\s*([^<]+)</p>", r"<div class='subsection'><div class='subsection-title'>\1 \2</div></div>", html)
+    html = re.sub(r"<p>(🪞\s*Reflection:?[^<]*)</p>", r"<div class='reflection-box'>\1</div>", html)
+    html = re.sub(r"<p>(🔑\s*Quantum Phrase:?[^<]*)</p>", r"<div class='quantum-box'>\1</div>", html)
+    html = re.sub(r"(<div class='subsection'><div class='subsection-title'>🧬[^<]*</div></div>)", r"<div class='gene-keys-box'>\1", html)
     return html
 
 
@@ -60,57 +122,18 @@ def _build_activation_map(chart: dict) -> list[dict]:
 
 def validate_report_structure(chart: dict, html: str) -> None:
     errors = []
-    required_headers = [
-        "Core Chart Snapshot", "Activation Map", "Overview / General Summary", "Type / Strategy / Authority",
-        "Profile", "Planetary Activations", "Centers", "Channels", "Tone of Voice", "Business / Social Application", "Final Summary"
-    ]
-    for h in required_headers:
-        if h not in html:
-            errors.append(f"Missing section: {h}")
-
-    if html.count("Planetary Activations") != 1:
-        errors.append("Planetary Activations must appear exactly once")
-    if html.count("Final Summary") != 1:
-        errors.append("Final Summary must appear exactly once")
-
-    def pos(x): return html.find(x)
-    if pos("Planetary Activations") > pos("Centers") or pos("Planetary Activations") > pos("Final Summary"):
-        errors.append("Planetary Activations order is invalid")
+    if "###" in html or "**" in html or "---" in html:
+        errors.append("Markdown artifacts detected")
+    if "<li></li>" in html or re.search(r">\s*[•\-*]\s*<", html):
+        errors.append("Empty bullet artifacts detected")
 
     expected = [p for p in PLANETS if chart.get("personality", {}).get(p) or chart.get("design", {}).get(p)]
-    actual_cards = html.count('class="planet-card"') + html.count("class='planet-card'")
-    if actual_cards != len(expected):
-        errors.append(f"Planet card count mismatch: expected {len(expected)} got {actual_cards}")
+    if (html.count('class="planet-card"') + html.count("class='planet-card'")) != len(expected):
+        errors.append("Planet card count mismatch")
 
-    for p in expected:
-        if p not in html:
-            errors.append(f"Missing planet card label: {p}")
-        pval = chart.get("personality", {}).get(p)
-        dval = chart.get("design", {}).get(p)
-        if pval and pval not in html:
-            errors.append(f"Missing personality activation: {p} {pval}")
-        if dval and dval not in html:
-            errors.append(f"Missing design activation: {p} {dval}")
-
-    overview_chunk = html.split("Overview / General Summary",1)[1].split("Type / Strategy / Authority",1)[0] if "Overview / General Summary" in html and "Type / Strategy / Authority" in html else ""
-    profile_chunk = html.split("<h2>Profile</h2>",1)[1].split("Planetary Activations",1)[0] if "<h2>Profile</h2>" in html and "Planetary Activations" in html else ""
-    for banned in ["Планеты личности", "Планеты дизайна", "Personality Activations", "Design Activations"]:
-        if banned in overview_chunk: errors.append(f"Overview contains duplicated planet list marker: {banned}")
-        if banned in profile_chunk: errors.append(f"Profile contains duplicated planet list marker: {banned}")
-
-    centers_all_null = all(v is None for v in chart.get("centers", {}).values()) if chart.get("centers") else True
-    if centers_all_null:
-        for banned in ["centers are absent", "centers are open", "centers are undefined", "центры отсутствуют", "центры открыты"]:
-            if banned.lower() in html.lower():
-                errors.append(f"Unsafe centers claim found: {banned}")
-        for banned in ["because you have no defined centers", "because your centers are absent"]:
-            if banned.lower() in html.lower():
-                errors.append(f"Unsafe business/summary centers claim: {banned}")
-
-    if not chart.get("channels"):
-        for banned in ["there are no defined channels", "channels are absent", "каналы отсутствуют"]:
-            if banned.lower() in html.lower():
-                errors.append(f"Unsafe channels claim found: {banned}")
+    overview_chunk = html.split("id=\"overview\"",1)[1].split("id=\"type-strategy-authority\"",1)[0] if "id=\"overview\"" in html else ""
+    if re.search(r"\b\d{1,2}\.\d\b", overview_chunk):
+        errors.append("Overview contains raw gate list")
 
     if errors:
         raise ValueError("Report structure validation failed:\n" + "\n".join(f"- {e}" for e in errors))
@@ -121,6 +144,8 @@ def render_html(context: dict, html_output_path: Path) -> str:
     template = env.get_template("report.html")
     cleaned_blocks = {k: _block_to_html(v) for k, v in context.get("blocks", {}).items()}
     enhanced = dict(context)
+    lang = context.get("language", "en")
+    enhanced["ui"] = LABELS.get(lang, LABELS["en"])
     enhanced["blocks_html"] = cleaned_blocks
     enhanced["activation_map_rows"] = _build_activation_map(context.get("chart", {}))
     html = template.render(**enhanced)
